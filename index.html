@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Suite École – Portail de téléchargement</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f0f4fa 0%, #e8edf5 50%, #ffffff 100%);
+            background-size: 200% 200%;
+            animation: gradientBG 10s ease infinite;
+            color: #1e293b;
+            line-height: 1.5;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        @keyframes floatParticle {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.5; }
+            90% { opacity: 0.5; }
+            100% { transform: translateY(-100px) rotate(360deg); opacity: 0; }
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-8px); }
+            20%, 40%, 60%, 80% { transform: translateX(8px); }
+        }
+        
+        @keyframes modalIn {
+            from { opacity: 0; transform: scale(0.95) translateY(20px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        
+        .fade-up {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+        .fade-up.visible { opacity: 1; transform: translateY(0); }
+        
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 24px;
+            width: 100%;
+        }
+        
+        /* === PARTICULES === */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+        .particle {
+            position: absolute;
+            background: rgba(26,60,110,0.08);
+            border-radius: 50%;
+            animation: floatParticle linear infinite;
+        }
+        
+        /* === NAVBAR (identique index01) === */
+        .navbar {
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(26,60,110,0.15);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .nav-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 0;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.6rem;
+            font-weight: 800;
+        }
+        .logo span {
+            background: linear-gradient(135deg, #1A3C6E, #27AE60);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .logo i {
+            color: #1A3C6E;
+            font-size: 2rem;
+        }
+        .nav-links {
+            display: flex;
+            gap: 28px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .nav-links a {
+            text-decoration: none;
+            font-weight: 500;
+            color: #1e293b;
+            transition: 0.3s;
+            position: relative;
+        }
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: #1A3C6E;
+            transition: width 0.3s;
+        }
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+        
+        /* === BOUTONS === */
+        .btn-primary {
+            background: #1A3C6E;
+            color: white;
+            padding: 14px 28px;
+            border-radius: 40px;
+            font-weight: 600;
+            border: none;
+            transition: 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            cursor: pointer;
+            font-size: 1rem;
+            font-family: 'Inter', sans-serif;
+        }
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-3px);
+            background: #0F2447;
+            box-shadow: 0 8px 25px rgba(26,60,110,0.3);
+        }
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .btn-success {
+            background: #27AE60;
+            color: white;
+            padding: 14px 40px;
+            border-radius: 40px;
+            font-weight: 600;
+            border: none;
+            transition: 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-family: 'Inter', sans-serif;
+        }
+        .btn-success:hover {
+            transform: translateY(-3px);
+            background: #1e8a4a;
+            box-shadow: 0 8px 25px rgba(39,174,96,0.3);
+        }
+        
+        .btn-outline {
+            border: 1.5px solid #1A3C6E;
+            background: transparent;
+            padding: 8px 20px;
+            border-radius: 40px;
+            font-weight: 600;
+            color: #1A3C6E;
+            transition: 0.3s;
+            text-decoration: none;
+            display: inline-block;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem;
+        }
+        .btn-outline:hover {
+            background: #1A3C6E;
+            color: white;
+            transform: scale(1.05);
+        }
+        
+        .btn-download {
+            width: 100%;
+            justify-content: center;
+            padding: 14px 20px;
+        }
+        
+        /* === HERO === */
+        .hero {
+            padding: 60px 0 30px;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+        .hero-badge {
+            background: rgba(26,60,110,0.1);
+            backdrop-filter: blur(4px);
+            color: #1A3C6E;
+            display: inline-block;
+            padding: 6px 14px;
+            border-radius: 30px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+        .hero h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            line-height: 1.2;
+            background: linear-gradient(135deg, #1A3C6E, #27AE60);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 16px;
+        }
+        .hero p {
+            color: #475569;
+            font-size: 1.2rem;
+            max-width: 600px;
+            margin: 0 auto 8px;
+        }
+        
+        /* === SECTION FICHIERS === */
+        .files-section {
+            padding: 20px 0 50px;
+            position: relative;
+            z-index: 1;
+        }
+        .files-section .section-title {
+            text-align: center;
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, #1A3C6E, #27AE60);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .files-section .section-sub {
+            text-align: center;
+            color: #475569;
+            max-width: 600px;
+            margin: 0 auto 40px;
+            font-size: 1.1rem;
+        }
+        
+        /* === CARTE DÉMO (seule en haut) === */
+        #demoContainer {
+            max-width: 650px;
+            margin: 0 auto 40px auto;
+        }
+        .demo-card {
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(4px);
+            border-radius: 28px;
+            padding: 36px 40px;
+            border: 2px solid rgba(39,174,96,0.3);
+            transition: all 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            text-align: center;
+            box-shadow: 0 8px 30px rgba(39,174,96,0.1);
+        }
+        .demo-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 20px 40px -12px rgba(39,174,96,0.25);
+            border-color: #27AE60;
+        }
+        .demo-card .icon {
+            font-size: 4rem;
+            margin-bottom: 8px;
+            display: block;
+        }
+        .demo-card .badge-demo {
+            display: inline-block;
+            background: #27AE60;
+            color: white;
+            padding: 4px 16px;
+            border-radius: 40px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            margin-bottom: 10px;
+        }
+        .demo-card h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1A3C6E;
+            margin-bottom: 4px;
+        }
+        .demo-card .size {
+            color: #64748b;
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+        }
+        .demo-card .desc {
+            color: #475569;
+            font-size: 1rem;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+        
+        /* === GRILLE PACKS (3 colonnes) === */
+        .packs-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+        }
+        
+        .file-card {
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(4px);
+            border-radius: 28px;
+            padding: 32px 24px;
+            transition: all 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            border: 1px solid rgba(26,60,110,0.12);
+            text-align: center;
+        }
+        .file-card:hover {
+            transform: translateY(-12px);
+            box-shadow: 0 30px 40px -15px rgba(26,60,110,0.25);
+            border-color: rgba(26,60,110,0.3);
+        }
+        .file-card .icon {
+            font-size: 3rem;
+            margin-bottom: 8px;
+            display: block;
+        }
+        .file-card .badge {
+            display: inline-block;
+            padding: 4px 14px;
+            border-radius: 40px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            margin-bottom: 10px;
+        }
+        .badge-locked {
+            background: #1A3C6E;
+            color: white;
+        }
+        .file-card h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #1A3C6E;
+            margin-bottom: 4px;
+        }
+        .file-card .size {
+            color: #64748b;
+            font-size: 0.85rem;
+            margin-bottom: 8px;
+        }
+        .file-card .desc {
+            color: #475569;
+            font-size: 0.9rem;
+            margin-bottom: 16px;
+            line-height: 1.5;
+        }
+        .file-card .btn-download {
+            width: 100%;
+            justify-content: center;
+        }
+        
+        /* === MODALE POPUP === */
+        #keyModal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(8px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        #keyModal.active {
+            display: flex;
+        }
+        .modal-content {
+            background: white;
+            border-radius: 32px;
+            padding: 40px 36px;
+            max-width: 450px;
+            width: 90%;
+            box-shadow: 0 40px 60px -20px rgba(0,0,0,0.3);
+            animation: modalIn 0.3s ease;
+        }
+        .modal-content .modal-icon {
+            font-size: 3rem;
+            text-align: center;
+            display: block;
+            margin-bottom: 12px;
+        }
+        .modal-content h2 {
+            color: #1A3C6E;
+            font-size: 1.6rem;
+            text-align: center;
+            margin-bottom: 6px;
+        }
+        .modal-content .modal-sub {
+            color: #64748b;
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 0.95rem;
+        }
+        .modal-content .modal-sub strong {
+            color: #1A3C6E;
+        }
+        .modal-input {
+            width: 100%;
+            padding: 14px 20px;
+            border-radius: 40px;
+            border: 2px solid #e2e8f0;
+            font-size: 1rem;
+            font-family: 'Inter', sans-serif;
+            transition: 0.3s;
+            margin-bottom: 12px;
+        }
+        .modal-input:focus {
+            outline: none;
+            border-color: #1A3C6E;
+            box-shadow: 0 0 0 4px rgba(26,60,110,0.1);
+        }
+        .modal-input.error {
+            border-color: #e74c3c;
+            animation: shake 0.4s ease;
+        }
+        .modal-buttons {
+            display: flex;
+            gap: 12px;
+        }
+        .modal-buttons .btn-primary,
+        .modal-buttons .btn-outline {
+            flex: 1;
+            justify-content: center;
+            text-align: center;
+        }
+        .modal-status {
+            margin-top: 14px;
+            padding: 12px 16px;
+            border-radius: 12px;
+            display: none;
+            font-size: 0.95rem;
+            text-align: center;
+        }
+        .modal-status.error {
+            display: block;
+            background: #fee2e2;
+            color: #dc2626;
+        }
+        .modal-status.success {
+            display: block;
+            background: #dcfce7;
+            color: #16a34a;
+        }
+        
+        /* === CONTACT (identique index01) === */
+        .contact-section {
+            background: linear-gradient(135deg, #1A3C6E, #0F2447);
+            border-radius: 48px;
+            padding: 50px 30px;
+            text-align: center;
+            margin: 20px auto 40px;
+        }
+        .contact-section h2 {
+            color: white;
+            font-size: 1.8rem;
+            margin-bottom: 16px;
+        }
+        .contact-section p {
+            color: #cbd5e1;
+            margin-bottom: 24px;
+        }
+        .contact-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 16px;
+        }
+        .contact-buttons .btn-success,
+        .contact-buttons .btn-primary {
+            text-decoration: none;
+        }
+        
+        /* === FOOTER (identique index01) === */
+        .footer {
+            background: #1A3C6E;
+            padding: 48px 0 24px;
+            color: #cbd5e1;
+            margin-top: auto;
+        }
+        .footer-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 32px;
+            margin-bottom: 40px;
+        }
+        .footer a {
+            color: #9ca3af;
+            text-decoration: none;
+            transition: 0.3s;
+        }
+        .footer a:hover {
+            color: #27AE60;
+        }
+        .footer-copyright {
+            text-align: center;
+            border-top: 1px solid #2d4a6e;
+            padding-top: 24px;
+            font-size: 0.85rem;
+        }
+        
+        /* === RESPONSIVE === */
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2rem; }
+            .files-section .section-title { font-size: 1.6rem; }
+            .packs-grid { grid-template-columns: 1fr; }
+            .logo { font-size: 1.2rem; }
+            .nav-links { gap: 16px; }
+            .modal-content { padding: 28px 20px; }
+            .modal-buttons { flex-direction: column; }
+            .demo-card { padding: 24px 20px; }
+            .demo-card h3 { font-size: 1.2rem; }
+            .contact-section { padding: 30px 20px; }
+            .contact-section h2 { font-size: 1.4rem; }
+        }
+        @media (max-width: 480px) {
+            .hero h1 { font-size: 1.6rem; }
+            .btn-success { font-size: 0.95rem; padding: 12px 24px; }
+            .demo-card .icon { font-size: 3rem; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- PARTICULES -->
+<div class="particles" id="particles"></div>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+    <div class="container nav-container">
+        <div class="logo">
+            <i class="fas fa-graduation-cap"></i>
+            <span>Suite École</span>
+        </div>
+        <div class="nav-links">
+            <a href="https://ecole.suitemg.com"><i class="fas fa-home"></i> Accueil</a>
+            <a href="#contact" class="btn-outline"><i class="fas fa-envelope"></i> Contact</a>
+        </div>
+    </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+    <div class="container">
+        <div class="hero-badge"><i class="fas fa-download"></i> Portail de téléchargement</div>
+        <h1>📥 Téléchargez votre pack</h1>
+        <p>Choisissez votre version. La démo est libre, les packs complets nécessitent une clé d'accès.</p>
+    </div>
+</section>
+
+<!-- SECTION FICHIERS -->
+<section class="files-section">
+    <div class="container">
+        <h2 class="section-title fade-up">📦 Fichiers disponibles</h2>
+        <p class="section-sub fade-up">Sélectionnez la version qui correspond à vos besoins</p>
+        
+        <!-- === DÉMO (seule en haut) === -->
+        <div id="demoContainer" class="fade-up"></div>
+        
+        <!-- === 3 PACKS (en bas, 3 colonnes) === -->
+        <div class="fade-up">
+            <div class="packs-grid" id="packsGrid"></div>
+        </div>
+    </div>
+</section>
+
+<!-- SECTION CONTACT -->
+<section class="container" id="contact">
+    <div class="contact-section">
+        <h2>📢 Besoin d'aide ?</h2>
+        <p>Contactez-nous pour toute question ou pour obtenir votre clé d'accès</p>
+        <div class="contact-buttons">
+            <a href="https://wa.me/261383014883" class="btn-success" target="_blank">
+                <i class="fab fa-whatsapp"></i> WhatsApp
+            </a>
+            <a href="mailto:contact@suitemg.com" class="btn-primary" style="background:#2d4a6e;">
+                <i class="fas fa-envelope"></i> Email
+            </a>
+            <a href="tel:+261383014883" class="btn-primary" style="background:#2d4a6e;">
+                <i class="fas fa-phone-alt"></i> Appel
+            </a>
+        </div>
+        <p style="margin-top:20px; font-size:0.85rem; opacity:0.7; color:white;">Réponse rapide.</p>
+    </div>
+</section>
+
+<!-- MODALE POPUP -->
+<div id="keyModal">
+    <div class="modal-content">
+        <span class="modal-icon">🔐</span>
+        <h2>Clé requise</h2>
+        <p class="modal-sub">Entrez votre clé pour télécharger <br><strong id="modalFileName">fichier.zip</strong></p>
+        
+        <input type="password" id="modalKeyInput" class="modal-input" placeholder="Clé d'accès (ex: SUITE-2026-TEST)" autocomplete="off">
+        <div class="modal-status" id="modalStatus"></div>
+        
+        <div class="modal-buttons">
+            <button onclick="confirmDownload()" class="btn-primary">
+                <i class="fas fa-unlock"></i> Télécharger
+            </button>
+            <button onclick="closeModal()" class="btn-outline">
+                Annuler
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- FOOTER -->
+<footer class="footer">
+    <div class="container">
+        <div class="footer-grid">
+            <div>
+                <strong>Suite École</strong><br>
+                Logiciel de gestion scolaire<br>
+                100% malgache
+            </div>
+            <div>
+                <strong>Ntsoa APPS</strong><br>
+                NIF : 5001 6939 46<br>
+                STAT : 61102 12 2014 0 01039
+            </div>
+            <div>
+                <strong>Liens utiles</strong><br>
+                <a href="https://ecole.suitemg.com">Accueil</a>                
+            </div>
+            <div>
+                <strong>Légal</strong><br>
+                <a href="contrat.html">Conditions générales</a><br>
+                © 2026 – Ntsoa APPS
+            </div>
+        </div>
+        <div class="footer-copyright">
+            Suite École — Gestion scolaire 100% hors ligne.
+        </div>
+    </div>
+</footer>
+
+<script>
+    // ============================================
+    // CONFIGURATION
+    // ============================================
+    const API_BASE = 'https://ton-username.pythonanywhere.com/api';
+    
+    // === DÉMO (seule en haut) ===
+    const DEMO = {
+        id: 0,
+        name: 'SuiteEcole_Demo.zip',
+        icon: '🚀',
+        size: '30 Mo',
+        description: 'Version d\'essai gratuite – Testez toutes les fonctionnalités de Suite École sans engagement.',
+        badge: '🔓 Téléchargement libre',
+        requires_key: false,
+        download_url: 'https://ton-hebergement.com/SuiteEcole_Demo.zip'
+    };
+    
+    // === PACKS (3 en bas) ===
+    const PACKS = [
+        {
+            id: 1,
+            name: 'SuiteEcole_Basique.zip',
+            icon: '📘',
+            size: '30 Mo',
+            description: 'Pack Basique – Gestion Base + BulletinApp + EDT. Idéal pour les petites écoles.',
+            badge: '🔐 Clé requise',
+            requires_key: true,
+            download_url: 'https://ton-hebergement.com/SuiteEcole_Basique.zip'
+        },
+        {
+            id: 2,
+            name: 'SuiteEcole_Pro.zip',
+            icon: '⭐',
+            size: '30 Mo',
+            description: 'Pack Pro – Tout le Basique + ComptaÉcole. La solution complète pour votre école.',
+            badge: '🔐 Clé requise',
+            requires_key: true,
+            download_url: 'https://ton-hebergement.com/SuiteEcole_Pro.zip'
+        },
+        {
+            id: 3,
+            name: 'SuiteEcole_Premium.zip',
+            icon: '💎',
+            size: '30 Mo',
+            description: 'Pack Premium – Tout le Pro + Gestion de Paie. La solution ultime pour les grands établissements.',
+            badge: '🔐 Clé requise',
+            requires_key: true,
+            download_url: 'https://ton-hebergement.com/SuiteEcole_Premium.zip'
+        }
+    ];
+    
+    let pendingFile = null;
+    
+    // ============================================
+    // CHARGEMENT DES FICHIERS
+    // ============================================
+    function loadFiles() {
+        // 1. DÉMO (en haut, seul)
+        const demoContainer = document.getElementById('demoContainer');
+        demoContainer.innerHTML = `
+            <div class="demo-card">
+                <span class="icon">${DEMO.icon}</span>
+                <span class="badge-demo">${DEMO.badge}</span>
+                <h3>${DEMO.name}</h3>
+                <div class="size"><i class="fas fa-hdd"></i> ${DEMO.size}</div>
+                <div class="desc">${DEMO.description}</div>
+                <button onclick="downloadDemo('${DEMO.id}')" class="btn-success">
+                    <i class="fas fa-download"></i> Télécharger la démo
+                </button>
+            </div>
+        `;
+        
+        // 2. PACKS (en bas, 3 colonnes)
+        const grid = document.getElementById('packsGrid');
+        grid.innerHTML = '';
+        
+        PACKS.forEach((pack, index) => {
+            const card = document.createElement('div');
+            card.className = 'file-card fade-up';
+            card.innerHTML = `
+                <span class="icon">${pack.icon}</span>
+                <span class="badge badge-locked">${pack.badge}</span>
+                <h3>${pack.name}</h3>
+                <div class="size"><i class="fas fa-hdd"></i> ${pack.size}</div>
+                <div class="desc">${pack.description}</div>
+                <button onclick="requestDownload('${pack.id}')" class="btn-primary btn-download">
+                    <i class="fas fa-lock"></i> Télécharger
+                </button>
+            `;
+            grid.appendChild(card);
+            
+            // Animation progressive
+            setTimeout(() => card.classList.add('visible'), 200 + index * 100);
+        });
+    }
+    
+    // ============================================
+    // TÉLÉCHARGEMENT DIRECT (DÉMO)
+    // ============================================
+    function downloadDemo(fileId) {
+        const file = (fileId == DEMO.id) ? DEMO : PACKS.find(f => f.id == fileId);
+        if (file && file.download_url) {
+            window.location.href = file.download_url;
+        } else {
+            alert('❌ URL de téléchargement introuvable');
+        }
+    }
+    
+    // ============================================
+    // DEMANDE DE TÉLÉCHARGEMENT (AVEC CLÉ)
+    // ============================================
+    function requestDownload(fileId) {
+        const file = PACKS.find(f => f.id === fileId);
+        if (!file) return;
+        
+        pendingFile = file;
+        document.getElementById('modalFileName').textContent = file.name;
+        document.getElementById('modalKeyInput').value = '';
+        document.getElementById('modalStatus').className = 'modal-status';
+        document.getElementById('modalStatus').style.display = 'none';
+        document.getElementById('modalKeyInput').classList.remove('error');
+        document.getElementById('keyModal').classList.add('active');
+        
+        setTimeout(() => {
+            document.getElementById('modalKeyInput').focus();
+        }, 300);
+    }
+    
+    // ============================================
+    // CONFIRMER LE TÉLÉCHARGEMENT
+    // ============================================
+    async function confirmDownload() {
+        const keyInput = document.getElementById('modalKeyInput');
+        const key = keyInput.value.trim();
+        const status = document.getElementById('modalStatus');
+        
+        if (!key) {
+            keyInput.classList.add('error');
+            showModalStatus('Veuillez entrer votre clé d\'accès', 'error');
+            return;
+        }
+        
+        keyInput.classList.remove('error');
+        showModalStatus('⏳ Vérification en cours...', '');
+        
+        try {
+            const verifyResponse = await fetch(`${API_BASE}/verify`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ key: key })
+            });
+            
+            const verifyData = await verifyResponse.json();
+            
+            if (!verifyData.valid) {
+                showModalStatus('❌ ' + verifyData.message, 'error');
+                keyInput.classList.add('error');
+                return;
+            }
+            
+            const downloadResponse = await fetch(`${API_BASE}/download`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ key: key })
+            });
+            
+            const downloadData = await downloadResponse.json();
+            
+            if (!downloadData.success) {
+                showModalStatus('❌ ' + downloadData.message, 'error');
+                return;
+            }
+            
+            showModalStatus('✅ Téléchargement autorisé !', 'success');
+            
+            setTimeout(() => {
+                if (pendingFile && pendingFile.download_url) {
+                    window.location.href = pendingFile.download_url;
+                }
+                closeModal();
+            }, 500);
+            
+        } catch (error) {
+            showModalStatus('❌ Erreur de connexion au serveur. Vérifiez votre connexion internet.', 'error');
+            console.error('Error:', error);
+        }
+    }
+    
+    // ============================================
+    // FERMER LA MODALE
+    // ============================================
+    function closeModal() {
+        document.getElementById('keyModal').classList.remove('active');
+        pendingFile = null;
+    }
+    
+    // ============================================
+    // AFFICHER LE STATUT DANS LA MODALE
+    // ============================================
+    function showModalStatus(message, type) {
+        const status = document.getElementById('modalStatus');
+        status.textContent = message;
+        status.className = 'modal-status';
+        if (type) {
+            status.classList.add(type);
+        }
+        status.style.display = 'block';
+    }
+    
+    // ============================================
+    // GESTION DES TOUCHES
+    // ============================================
+    document.getElementById('modalKeyInput').addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            confirmDownload();
+        }
+    });
+    
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && document.getElementById('keyModal').classList.contains('active')) {
+            closeModal();
+        }
+    });
+    
+    document.getElementById('keyModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeModal();
+        }
+    });
+    
+    // ============================================
+    // PARTICULES
+    // ============================================
+    function createParticles() {
+        const container = document.getElementById('particles');
+        if (!container) return;
+        for (let i = 0; i < 40; i++) {
+            const particle = document.createElement('div');
+            particle.classList.add('particle');
+            const size = Math.random() * 8 + 4;
+            particle.style.width = size + 'px';
+            particle.style.height = size + 'px';
+            particle.style.left = Math.random() * 100 + '%';
+            particle.style.animationDuration = Math.random() * 15 + 8 + 's';
+            particle.style.animationDelay = Math.random() * 10 + 's';
+            container.appendChild(particle);
+        }
+    }
+    createParticles();
+    
+    // ============================================
+    // ANIMATIONS FADE-UP
+    // ============================================
+    document.addEventListener('DOMContentLoaded', function() {
+        loadFiles();
+        
+        const fadeElements = document.querySelectorAll('.fade-up');
+        const scrollObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1 });
+        fadeElements.forEach(el => scrollObserver.observe(el));
+    });
+</script>
+</body>
+</html>
