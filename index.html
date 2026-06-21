@@ -77,7 +77,7 @@
             animation: floatParticle linear infinite;
         }
         
-        /* === NAVBAR (identique index01) === */
+        /* === NAVBAR === */
         .navbar {
             background: rgba(255,255,255,0.95);
             backdrop-filter: blur(12px);
@@ -273,7 +273,7 @@
             font-size: 1.1rem;
         }
         
-        /* === CARTE DÉMO (seule en haut) === */
+        /* === CARTE DÉMO === */
         #demoContainer {
             max-width: 650px;
             margin: 0 auto 40px auto;
@@ -327,7 +327,7 @@
             line-height: 1.6;
         }
         
-        /* === GRILLE PACKS (3 colonnes) === */
+        /* === GRILLE PACKS === */
         .packs-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -388,7 +388,7 @@
             justify-content: center;
         }
         
-        /* === MODALE POPUP === */
+        /* === MODALE === */
         #keyModal {
             display: none;
             position: fixed;
@@ -483,7 +483,7 @@
             color: #16a34a;
         }
         
-        /* === CONTACT (identique index01) === */
+        /* === CONTACT === */
         .contact-section {
             background: linear-gradient(135deg, #1A3C6E, #0F2447);
             border-radius: 48px;
@@ -511,7 +511,7 @@
             text-decoration: none;
         }
         
-        /* === FOOTER (identique index01) === */
+        /* === FOOTER === */
         .footer {
             background: #1A3C6E;
             padding: 48px 0 24px;
@@ -595,17 +595,17 @@
         <h2 class="section-title fade-up">📦 Fichiers disponibles</h2>
         <p class="section-sub fade-up">Sélectionnez la version qui correspond à vos besoins</p>
         
-        <!-- === DÉMO (seule en haut) === -->
+        <!-- DÉMO -->
         <div id="demoContainer" class="fade-up"></div>
         
-        <!-- === 3 PACKS (en bas, 3 colonnes) === -->
+        <!-- PACKS -->
         <div class="fade-up">
             <div class="packs-grid" id="packsGrid"></div>
         </div>
     </div>
 </section>
 
-<!-- SECTION CONTACT -->
+<!-- CONTACT -->
 <section class="container" id="contact">
     <div class="contact-section">
         <h2>📢 Besoin d'aide ?</h2>
@@ -625,7 +625,7 @@
     </div>
 </section>
 
-<!-- MODALE POPUP -->
+<!-- MODALE -->
 <div id="keyModal">
     <div class="modal-content">
         <span class="modal-icon">🔐</span>
@@ -678,68 +678,64 @@
 
 <script>
     // ============================================
-    // CONFIGURATION
+    // CONFIGURATION SUPABASE
     // ============================================
-    const API_BASE = 'https://ton-username.pythonanywhere.com/api';
-    
-    // === DÉMO (seule en haut) ===
+    const SUPABASE_URL = 'https://TON_PROJET.supabase.co';        // ← À MODIFIER
+    const SUPABASE_ANON_KEY = 'TON_ANON_KEY_PUBLIC';              // ← À MODIFIER
+
+    // === DÉMO ===
     const DEMO = {
         id: 0,
-        name: 'SuiteEcole_Demo.zip',
+        name: 'SuiteEcole_Demo.exe',
         icon: '🚀',
         size: '30 Mo',
-        description: 'Version d\'essai gratuite – Testez toutes les fonctionnalités de Suite École sans engagement.',
-        badge: '🔓 Téléchargement libre',
+        description: '🔓 Version démo gratuite – Testez Suite École sans engagement.',
         requires_key: false,
-        download_url: 'https://ton-hebergement.com/SuiteEcole_Demo.zip'
+        download_url: 'https://github.com/TON_USERNAME/telechargement-suite-ecole/releases/download/v1.0.0/SuiteEcole_Demo.exe'
     };
-    
-    // === PACKS (3 en bas) ===
+
+    // === PACKS ===
     const PACKS = [
         {
             id: 1,
-            name: 'SuiteEcole_Basique.zip',
+            name: 'SuiteEcole_Basique.exe',
             icon: '📘',
             size: '30 Mo',
-            description: 'Pack Basique – Gestion Base + BulletinApp + EDT. Idéal pour les petites écoles.',
-            badge: '🔐 Clé requise',
+            description: '🔐 Pack Basique – Gestion Base + BulletinApp + EDT.',
             requires_key: true,
-            download_url: 'https://ton-hebergement.com/SuiteEcole_Basique.zip'
+            download_url: 'https://github.com/TON_USERNAME/telechargement-suite-ecole/releases/download/v1.0.0/SuiteEcole_Basique.exe'
         },
         {
             id: 2,
-            name: 'SuiteEcole_Pro.zip',
+            name: 'SuiteEcole_Pro.exe',
             icon: '⭐',
             size: '30 Mo',
-            description: 'Pack Pro – Tout le Basique + ComptaÉcole. La solution complète pour votre école.',
-            badge: '🔐 Clé requise',
+            description: '🔐 Pack Pro – Tout le Basique + ComptaÉcole.',
             requires_key: true,
-            download_url: 'https://ton-hebergement.com/SuiteEcole_Pro.zip'
+            download_url: 'https://github.com/TON_USERNAME/telechargement-suite-ecole/releases/download/v1.0.0/SuiteEcole_Pro.exe'
         },
         {
             id: 3,
-            name: 'SuiteEcole_Premium.zip',
+            name: 'SuiteEcole_Premium.exe',
             icon: '💎',
             size: '30 Mo',
-            description: 'Pack Premium – Tout le Pro + Gestion de Paie. La solution ultime pour les grands établissements.',
-            badge: '🔐 Clé requise',
+            description: '🔐 Pack Premium – Tout le Pro + Gestion de Paie.',
             requires_key: true,
-            download_url: 'https://ton-hebergement.com/SuiteEcole_Premium.zip'
+            download_url: 'https://github.com/TON_USERNAME/telechargement-suite-ecole/releases/download/v1.0.0/SuiteEcole_Premium.exe'
         }
     ];
-    
+
     let pendingFile = null;
-    
+
     // ============================================
     // CHARGEMENT DES FICHIERS
     // ============================================
     function loadFiles() {
-        // 1. DÉMO (en haut, seul)
         const demoContainer = document.getElementById('demoContainer');
         demoContainer.innerHTML = `
             <div class="demo-card">
                 <span class="icon">${DEMO.icon}</span>
-                <span class="badge-demo">${DEMO.badge}</span>
+                <span class="badge-demo">🔓 Téléchargement libre</span>
                 <h3>${DEMO.name}</h3>
                 <div class="size"><i class="fas fa-hdd"></i> ${DEMO.size}</div>
                 <div class="desc">${DEMO.description}</div>
@@ -748,17 +744,16 @@
                 </button>
             </div>
         `;
-        
-        // 2. PACKS (en bas, 3 colonnes)
+
         const grid = document.getElementById('packsGrid');
         grid.innerHTML = '';
-        
+
         PACKS.forEach((pack, index) => {
             const card = document.createElement('div');
             card.className = 'file-card fade-up';
             card.innerHTML = `
                 <span class="icon">${pack.icon}</span>
-                <span class="badge badge-locked">${pack.badge}</span>
+                <span class="badge badge-locked">🔐 Clé requise</span>
                 <h3>${pack.name}</h3>
                 <div class="size"><i class="fas fa-hdd"></i> ${pack.size}</div>
                 <div class="desc">${pack.description}</div>
@@ -767,12 +762,10 @@
                 </button>
             `;
             grid.appendChild(card);
-            
-            // Animation progressive
             setTimeout(() => card.classList.add('visible'), 200 + index * 100);
         });
     }
-    
+
     // ============================================
     // TÉLÉCHARGEMENT DIRECT (DÉMO)
     // ============================================
@@ -784,14 +777,14 @@
             alert('❌ URL de téléchargement introuvable');
         }
     }
-    
+
     // ============================================
     // DEMANDE DE TÉLÉCHARGEMENT (AVEC CLÉ)
     // ============================================
     function requestDownload(fileId) {
         const file = PACKS.find(f => f.id === fileId);
         if (!file) return;
-        
+
         pendingFile = file;
         document.getElementById('modalFileName').textContent = file.name;
         document.getElementById('modalKeyInput').value = '';
@@ -799,72 +792,91 @@
         document.getElementById('modalStatus').style.display = 'none';
         document.getElementById('modalKeyInput').classList.remove('error');
         document.getElementById('keyModal').classList.add('active');
-        
+
         setTimeout(() => {
             document.getElementById('modalKeyInput').focus();
         }, 300);
     }
-    
+
     // ============================================
-    // CONFIRMER LE TÉLÉCHARGEMENT
+    // CONFIRMER LE TÉLÉCHARGEMENT (AVEC SUPABASE)
     // ============================================
     async function confirmDownload() {
         const keyInput = document.getElementById('modalKeyInput');
         const key = keyInput.value.trim();
         const status = document.getElementById('modalStatus');
-        
+
         if (!key) {
             keyInput.classList.add('error');
             showModalStatus('Veuillez entrer votre clé d\'accès', 'error');
             return;
         }
-        
+
         keyInput.classList.remove('error');
         showModalStatus('⏳ Vérification en cours...', '');
-        
+
         try {
-            const verifyResponse = await fetch(`${API_BASE}/verify`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ key: key })
+            // 1. Vérifier la clé dans Supabase
+            const verifyResponse = await fetch(`${SUPABASE_URL}/rest/v1/keys?key_text=eq.${key}&select=key_text,max_downloads,used_count,is_active`, {
+                headers: {
+                    'apikey': SUPABASE_ANON_KEY,
+                    'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                }
             });
-            
+
             const verifyData = await verifyResponse.json();
-            
-            if (!verifyData.valid) {
-                showModalStatus('❌ ' + verifyData.message, 'error');
+
+            if (!verifyData || verifyData.length === 0) {
+                showModalStatus('❌ Clé invalide', 'error');
                 keyInput.classList.add('error');
                 return;
             }
-            
-            const downloadResponse = await fetch(`${API_BASE}/download`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ key: key })
-            });
-            
-            const downloadData = await downloadResponse.json();
-            
-            if (!downloadData.success) {
-                showModalStatus('❌ ' + downloadData.message, 'error');
+
+            const record = verifyData[0];
+
+            if (!record.is_active) {
+                showModalStatus('❌ Clé désactivée', 'error');
+                keyInput.classList.add('error');
                 return;
             }
-            
-            showModalStatus('✅ Téléchargement autorisé !', 'success');
-            
+
+            if (record.used_count >= record.max_downloads) {
+                showModalStatus('❌ Clé expirée (téléchargements épuisés)', 'error');
+                keyInput.classList.add('error');
+                return;
+            }
+
+            // 2. Enregistrer le téléchargement (incrémenter used_count)
+            await fetch(`${SUPABASE_URL}/rest/v1/keys?key_text=eq.${key}`, {
+                method: 'PATCH',
+                headers: {
+                    'apikey': SUPABASE_ANON_KEY,
+                    'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                    'Content-Type': 'application/json',
+                    'Prefer': 'return=representation'
+                },
+                body: JSON.stringify({
+                    used_count: record.used_count + 1
+                })
+            });
+
+            // 3. Télécharger le fichier
+            const remaining = record.max_downloads - (record.used_count + 1);
+            showModalStatus(`✅ Téléchargement autorisé ! (${remaining} restant${remaining > 1 ? 's' : ''})`, 'success');
+
             setTimeout(() => {
                 if (pendingFile && pendingFile.download_url) {
                     window.location.href = pendingFile.download_url;
                 }
                 closeModal();
             }, 500);
-            
+
         } catch (error) {
-            showModalStatus('❌ Erreur de connexion au serveur. Vérifiez votre connexion internet.', 'error');
+            showModalStatus('❌ Erreur de connexion à Supabase', 'error');
             console.error('Error:', error);
         }
     }
-    
+
     // ============================================
     // FERMER LA MODALE
     // ============================================
@@ -872,9 +884,9 @@
         document.getElementById('keyModal').classList.remove('active');
         pendingFile = null;
     }
-    
+
     // ============================================
-    // AFFICHER LE STATUT DANS LA MODALE
+    // AFFICHER LE STATUT
     // ============================================
     function showModalStatus(message, type) {
         const status = document.getElementById('modalStatus');
@@ -885,7 +897,7 @@
         }
         status.style.display = 'block';
     }
-    
+
     // ============================================
     // GESTION DES TOUCHES
     // ============================================
@@ -895,19 +907,19 @@
             confirmDownload();
         }
     });
-    
+
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape' && document.getElementById('keyModal').classList.contains('active')) {
             closeModal();
         }
     });
-    
+
     document.getElementById('keyModal').addEventListener('click', function(e) {
         if (e.target === this) {
             closeModal();
         }
     });
-    
+
     // ============================================
     // PARTICULES
     // ============================================
@@ -927,13 +939,13 @@
         }
     }
     createParticles();
-    
+
     // ============================================
     // ANIMATIONS FADE-UP
     // ============================================
     document.addEventListener('DOMContentLoaded', function() {
         loadFiles();
-        
+
         const fadeElements = document.querySelectorAll('.fade-up');
         const scrollObserver = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
