@@ -730,7 +730,7 @@
     // ============================================
     // CHARGEMENT DES FICHIERS
     // ============================================
-    function loadFiles() {
+        function loadFiles() {
         const demoContainer = document.getElementById('demoContainer');
         demoContainer.innerHTML = `
             <div class="demo-card">
@@ -739,7 +739,7 @@
                 <h3>${DEMO.name}</h3>
                 <div class="size"><i class="fas fa-hdd"></i> ${DEMO.size}</div>
                 <div class="desc">${DEMO.description}</div>
-                <button onclick="downloadDemo('${DEMO.id}')" class="btn-success">
+                <button onclick="downloadDemo(${DEMO.id})" class="btn-success">
                     <i class="fas fa-download"></i> Télécharger la démo
                 </button>
             </div>
