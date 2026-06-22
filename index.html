@@ -662,7 +662,7 @@
             </div>
             <div>
                 <strong>Liens utiles</strong><br>
-                <a href="https://ecole.suitemg.com" target="_blank">Accueil</a>                
+                <a href="https://ecole.suitemg.com">Accueil</a>                
             </div>
             <div>
                 <strong>Légal</strong><br>
@@ -772,9 +772,28 @@
     function downloadDemo(fileId) {
         const file = (fileId == DEMO.id) ? DEMO : PACKS.find(f => f.id == fileId);
         if (file && file.download_url) {
+            logDemoDownload();
             window.location.href = file.download_url;
         } else {
             alert('❌ URL de téléchargement introuvable');
+        }
+    }
+
+    // Enregistre un téléchargement de démo dans Supabase (sans bloquer le download)
+    async function logDemoDownload() {
+        try {
+            await fetch(`${SUPABASE_URL}/rest/v1/demo_downloads`, {
+                method: 'POST',
+                headers: {
+                    'apikey': SUPABASE_ANON_KEY,
+                    'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                    'Content-Type': 'application/json',
+                    'Prefer': 'return=minimal'
+                },
+                body: JSON.stringify({})
+            });
+        } catch (error) {
+            console.error('Erreur log téléchargement démo:', error);
         }
     }
 
