@@ -662,11 +662,11 @@
             </div>
             <div>
                 <strong>Liens utiles</strong><br>
-                <a href="https://ecole.suitemg.com">Accueil</a>                
+                <a href="https://ecole.suitemg.com" target="_blank">Accueil</a>                
             </div>
             <div>
                 <strong>Légal</strong><br>
-                <a href="contrat.html">Conditions générales</a><br>
+                <a href="https://ecole.suitemg.com/contrat" target="_blank">Conditions générales</a><br>
                 © 2026 – Ntsoa APPS
             </div>
         </div>
@@ -817,7 +817,7 @@
 
         try {
             // 1. Vérifier la clé dans Supabase
-            const verifyResponse = await fetch(`${SUPABASE_URL}/rest/v1/keys?key_text=eq.${key}&select=key_text,max_downloads,used_count,is_active`, {
+            const verifyResponse = await fetch(`${SUPABASE_URL}/rest/v1/keys?key_text=eq.${key}&select=key_text,max_downloads,used_count,is_active,pack_id`, {
                 headers: {
                     'apikey': SUPABASE_ANON_KEY,
                     'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
@@ -842,6 +842,15 @@
 
             if (record.used_count >= record.max_downloads) {
                 showModalStatus('❌ Clé expirée (téléchargements épuisés)', 'error');
+                keyInput.classList.add('error');
+                return;
+            }
+
+            // record.pack_id === null veut dire une ancienne clé générée avant
+            // la mise en place du système de packs : on la laisse passer pour
+            // ne pas casser des clés déjà distribuées à des clients.
+            if (record.pack_id !== null && record.pack_id !== pendingFile.id) {
+                showModalStatus('❌ Cette clé ne donne pas accès à ce pack', 'error');
                 keyInput.classList.add('error');
                 return;
             }
