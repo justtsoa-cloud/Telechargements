@@ -695,6 +695,10 @@
     };
 
     // === PACKS ===
+    // NOTE SÉCURITÉ : download_url n'est plus utilisé pour les packs payants.
+    // L'URL réelle est désormais générée côté serveur (Edge Function "redeem-key")
+    // uniquement après validation de la clé, et n'apparaît jamais dans ce fichier
+    // ni dans le code source de la page. Laisser ce champ vide.
     const PACKS = [
         {
             id: 1,
@@ -819,12 +823,16 @@
     }
 
     // ============================================
-    // CONFIRMER LE TÉLÉCHARGEMENT (AVEC SUPABASE)
+    // CONFIRMER LE TÉLÉCHARGEMENT (VIA EDGE FUNCTION SÉCURISÉE)
     // ============================================
+    // IMPORTANT : toute la vérification de clé + l'incrémentation du quota
+    // + la génération de l'URL de téléchargement se font maintenant côté
+    // serveur, dans la fonction "redeem-key". Le navigateur ne voit jamais
+    // la table "keys" ni l'URL réelle du fichier : il ne reçoit qu'une URL
+    // signée, valable 2 minutes, générée APRÈS validation de la clé.
     async function confirmDownload() {
         const keyInput = document.getElementById('modalKeyInput');
         const key = keyInput.value.trim();
-        const status = document.getElementById('modalStatus');
 
         if (!key) {
             keyInput.classList.add('error');
@@ -836,72 +844,33 @@
         showModalStatus('⏳ Vérification en cours...', '');
 
         try {
-            // 1. Vérifier la clé dans Supabase
-            const verifyResponse = await fetch(`${SUPABASE_URL}/rest/v1/keys?key_text=eq.${key}&select=key_text,max_downloads,used_count,is_active,pack_id`, {
-                headers: {
-                    'apikey': SUPABASE_ANON_KEY,
-                    'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
-                }
-            });
-
-            const verifyData = await verifyResponse.json();
-
-            if (!verifyData || verifyData.length === 0) {
-                showModalStatus('❌ Clé invalide', 'error');
-                keyInput.classList.add('error');
-                return;
-            }
-
-            const record = verifyData[0];
-
-            if (!record.is_active) {
-                showModalStatus('❌ Clé désactivée', 'error');
-                keyInput.classList.add('error');
-                return;
-            }
-
-            if (record.used_count >= record.max_downloads) {
-                showModalStatus('❌ Clé expirée (téléchargements épuisés)', 'error');
-                keyInput.classList.add('error');
-                return;
-            }
-
-            // record.pack_id === null veut dire une ancienne clé générée avant
-            // la mise en place du système de packs : on la laisse passer pour
-            // ne pas casser des clés déjà distribuées à des clients.
-            if (record.pack_id !== null && record.pack_id !== pendingFile.id) {
-                showModalStatus('❌ Cette clé ne donne pas accès à ce pack', 'error');
-                keyInput.classList.add('error');
-                return;
-            }
-
-            // 2. Enregistrer le téléchargement (incrémenter used_count)
-            await fetch(`${SUPABASE_URL}/rest/v1/keys?key_text=eq.${key}`, {
-                method: 'PATCH',
+            const response = await fetch(`${SUPABASE_URL}/functions/v1/redeem-key`, {
+                method: 'POST',
                 headers: {
                     'apikey': SUPABASE_ANON_KEY,
                     'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-                    'Content-Type': 'application/json',
-                    'Prefer': 'return=representation'
+                    'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({
-                    used_count: record.used_count + 1
-                })
+                body: JSON.stringify({ key, pack_id: pendingFile.id })
             });
 
-            // 3. Télécharger le fichier
-            const remaining = record.max_downloads - (record.used_count + 1);
-            showModalStatus(`✅ Téléchargement autorisé ! (${remaining} restant${remaining > 1 ? 's' : ''})`, 'success');
+            const result = await response.json();
+
+            if (!response.ok || result.error) {
+                showModalStatus(`❌ ${result.error || 'Erreur inconnue'}`, 'error');
+                keyInput.classList.add('error');
+                return;
+            }
+
+            showModalStatus(`✅ Téléchargement autorisé ! (${result.remaining} restant${result.remaining > 1 ? 's' : ''})`, 'success');
 
             setTimeout(() => {
-                if (pendingFile && pendingFile.download_url) {
-                    window.location.href = pendingFile.download_url;
-                }
+                window.location.href = result.url; // URL signée temporaire, jamais l'URL permanente
                 closeModal();
             }, 500);
 
         } catch (error) {
-            showModalStatus('❌ Erreur de connexion à Supabase', 'error');
+            showModalStatus('❌ Erreur de connexion au serveur', 'error');
             console.error('Error:', error);
         }
     }
