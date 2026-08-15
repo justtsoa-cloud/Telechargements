@@ -338,8 +338,9 @@
         
         /* === GRILLE PACKS === */
         .packs-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
             gap: 30px;
         }
         .packs-grid-narrow {
@@ -349,7 +350,7 @@
         .packs-grid-single {
             max-width: 340px;
         }
-        
+
         .file-card {
             background: rgba(255,255,255,0.95);
             backdrop-filter: blur(4px);
@@ -358,6 +359,8 @@
             transition: all 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
             border: 1px solid rgba(26,60,110,0.12);
             text-align: center;
+            flex: 1 1 260px;
+            max-width: 340px;
         }
         .file-card:hover {
             transform: translateY(-12px);
@@ -561,7 +564,7 @@
         @media (max-width: 768px) {
             .hero h1 { font-size: 2rem; }
             .files-section .section-title { font-size: 1.6rem; }
-            .packs-grid { grid-template-columns: 1fr; }
+            .file-card { flex-basis: 100%; }
             .logo { font-size: 1.2rem; }
             .nav-links { gap: 16px; }
             .modal-content { padding: 28px 20px; }
