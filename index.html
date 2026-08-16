@@ -594,7 +594,7 @@
             <span>Suite École</span>
         </div>
         <div class="nav-links">
-            <a href="https://ecole.suitemg.com"><i class="fas fa-home"></i> Accueil</a>
+            <a href="https://ecole.suitemg.com" class="js-lien-accueil"><i class="fas fa-home"></i> Accueil</a>
             <a href="#contact" class="btn-outline"><i class="fas fa-envelope"></i> Contact</a>
         </div>
     </div>
@@ -614,7 +614,7 @@
     <div style="background: rgba(26,60,110,0.06); border: 1px solid rgba(26,60,110,0.15); border-radius: 20px; padding: 18px 28px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; justify-content: center; text-align: center;">
         <i class="fas fa-file-contract" style="font-size: 1.5rem; color: #1A3C6E;"></i>
         <p style="margin: 0; color: #334155; font-size: 0.95rem;">
-            Avant de télécharger, merci de prendre connaissance de nos <a href="https://ecole.suitemg.com/contrat" target="_blank" style="color:#1A3C6E; font-weight:700; text-decoration: underline;">Conditions d'utilisation</a> (licence, tarifs et garanties).
+            Avant de télécharger, merci de prendre connaissance de nos <a href="https://ecole.suitemg.com/contrat" target="_blank" class="js-lien-contrat" style="color:#1A3C6E; font-weight:700; text-decoration: underline;">Conditions d'utilisation</a> (licence, tarifs et garanties).
         </p>
     </div>
 </section>
@@ -704,8 +704,8 @@
             </div>
             <div>
                 <strong>Liens utiles</strong><br>
-                <a href="https://ecole.suitemg.com">Accueil</a><br>
-                <a href="https://ecole.suitemg.com/contrat" target="_blank">Conditions d'utilisation</a>
+                <a href="https://ecole.suitemg.com" class="js-lien-accueil">Accueil</a><br>
+                <a href="https://ecole.suitemg.com/contrat" target="_blank" class="js-lien-contrat">Conditions d'utilisation</a>
             </div>
             <div>
                 <strong>Légal</strong><br>
@@ -719,6 +719,22 @@
 </footer>
 
 <script>
+    // ============================================
+    // RETOUR VERS LE BON SITE D'ORIGINE (FR ou standard)
+    // ============================================
+    // Ce site de téléchargement est partagé par ecole.suitemg.com ET ecolefr.suitemg.com.
+    // On devine d'où vient le visiteur via document.referrer (fiable ici : les deux sites
+    // ouvrent ce lien dans un nouvel onglet, sans rel="noreferrer") pour renvoyer "Accueil"
+    // vers le bon domaine plutôt que de dupliquer tout ce site pour un seul lien différent.
+    // Si le referrer est absent/bloqué (vie privée du navigateur), on retombe sur ecole.suitemg.com.
+    (function () {
+        const vientDeFR = document.referrer.includes('ecolefr.suitemg.com');
+        const accueil = vientDeFR ? 'https://ecolefr.suitemg.com' : 'https://ecole.suitemg.com';
+        const contrat = accueil + '/contrat';
+        document.querySelectorAll('.js-lien-accueil').forEach(a => a.href = accueil);
+        document.querySelectorAll('.js-lien-contrat').forEach(a => a.href = contrat);
+    })();
+
     // ============================================
     // CONFIGURATION SUPABASE
     // ============================================
