@@ -272,7 +272,131 @@
             margin: 0 auto 40px;
             font-size: 1.1rem;
         }
-        
+
+        /* === SWITCHER DE CATÉGORIE (barre compacte après un choix) === */
+        .category-switcher {
+            display: none;
+            background: rgba(255,255,255,0.9);
+            border-bottom: 1px solid rgba(26,60,110,0.12);
+            padding: 14px 0;
+            position: relative;
+            z-index: 1;
+        }
+        .category-switcher.visible { display: block; }
+        .category-switcher .container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .switcher-label {
+            font-size: 0.82rem;
+            color: #94a3b8;
+            font-weight: 600;
+            margin-right: 2px;
+        }
+        .switch-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 8px 18px;
+            border-radius: 40px;
+            border: 1.5px solid rgba(26,60,110,0.15);
+            background: white;
+            color: #475569;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            transition: 0.25s;
+        }
+        .switch-pill:hover { border-color: #1A3C6E; color: #1A3C6E; }
+        .switch-pill.active[data-cat="demo"] { background: #27AE60; border-color: #27AE60; color: white; }
+        .switch-pill.active[data-cat="pack"] { background: #1A3C6E; border-color: #1A3C6E; color: white; }
+        .switch-pill.active[data-cat="portail"] { background: #B7791F; border-color: #B7791F; color: white; }
+
+        /* === CHOOSER (sélecteur de catégorie initial) === */
+        .chooser-section.collapsed { display: none; }
+        .choice-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 24px;
+            max-width: 980px;
+            margin: 0 auto;
+        }
+        .choice-card {
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(4px);
+            border-radius: 28px;
+            padding: 40px 30px;
+            border: 1.5px solid rgba(26,60,110,0.12);
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.35s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            flex: 1 1 260px;
+            max-width: 320px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+        .choice-card:hover, .choice-card:focus-visible {
+            transform: translateY(-10px);
+            box-shadow: 0 30px 40px -15px rgba(26,60,110,0.25);
+        }
+        .choice-card:focus-visible { outline: 2px solid #1A3C6E; outline-offset: 4px; }
+        .choice-card[data-cat="demo"]:hover { border-color: #27AE60; }
+        .choice-card[data-cat="pack"]:hover { border-color: #1A3C6E; }
+        .choice-card[data-cat="portail"]:hover { border-color: #B7791F; }
+        .choice-icon {
+            width: 64px; height: 64px;
+            border-radius: 18px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 2rem;
+        }
+        .choice-card[data-cat="demo"] .choice-icon { background: rgba(39,174,96,0.12); }
+        .choice-card[data-cat="pack"] .choice-icon { background: rgba(26,60,110,0.1); }
+        .choice-card[data-cat="portail"] .choice-icon { background: rgba(183,121,31,0.14); }
+        .choice-tag {
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            padding: 4px 12px;
+            border-radius: 40px;
+        }
+        .choice-card[data-cat="demo"] .choice-tag { background: rgba(39,174,96,0.15); color: #1e8a4a; }
+        .choice-card[data-cat="pack"] .choice-tag { background: rgba(26,60,110,0.1); color: #1A3C6E; }
+        .choice-card[data-cat="portail"] .choice-tag { background: rgba(183,121,31,0.18); color: #8a5a15; }
+        .choice-card h3 { font-size: 1.3rem; font-weight: 700; color: #1A3C6E; }
+        .choice-card p { color: #475569; font-size: 0.95rem; line-height: 1.55; }
+        .choice-arrow { font-size: 0.88rem; font-weight: 600; color: #94a3b8; transition: 0.2s; }
+        .choice-card:hover .choice-arrow { color: #1A3C6E; }
+
+        /* === PANELS DE CATÉGORIE (contenu révélé après le choix) === */
+        .category-panel { display: none; }
+        .category-panel.visible { display: block; animation: panelReveal 0.4s cubic-bezier(0.2,0.9,0.4,1.1); }
+        @keyframes panelReveal {
+            from { opacity: 0; transform: translateY(14px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .back-to-chooser {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: none;
+            border: none;
+            color: #94a3b8;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-bottom: 20px;
+            padding: 0;
+        }
+        .back-to-chooser:hover { color: #1A3C6E; }
+
         /* === CARTE DÉMO === */
         #demoContainer {
             max-width: 900px;
@@ -383,6 +507,10 @@
         }
         .badge-locked {
             background: #1A3C6E;
+            color: white;
+        }
+        .badge-free-portail {
+            background: #27AE60;
             color: white;
         }
         .file-card h3 {
@@ -573,6 +701,8 @@
             .demo-card h3 { font-size: 1.2rem; }
             .contact-section { padding: 30px 20px; }
             .contact-section h2 { font-size: 1.4rem; }
+            .choice-card { flex-basis: 100%; }
+            .switcher-label { width: 100%; margin-bottom: 4px; }
         }
         @media (max-width: 480px) {
             .hero h1 { font-size: 1.6rem; }
@@ -604,8 +734,8 @@
 <section class="hero">
     <div class="container">
         <div class="hero-badge"><i class="fas fa-download"></i> Portail de téléchargement</div>
-        <h1>📥 Téléchargez votre pack</h1>
-        <p>Choisissez votre version. La démo est libre, les packs complets nécessitent une clé d'accès.</p>
+        <h1>📥 Téléchargez Suite École</h1>
+        <p>Une démo, un pack complet ou un portail complémentaire : choisissez ci-dessous.</p>
     </div>
 </section>
 
@@ -619,31 +749,87 @@
     </div>
 </section>
 
-<!-- SECTION FICHIERS -->
-<section class="files-section">
+<!-- SWITCHER DE CATÉGORIE (apparaît après un premier choix) -->
+<div class="category-switcher" id="categorySwitcher">
     <div class="container">
-        <h2 class="section-title fade-up">📦 Fichiers disponibles</h2>
-        <p class="section-sub fade-up">Sélectionnez la version qui correspond à vos besoins</p>
-        
-        <!-- DÉMO -->
-        <div id="demoContainer" class="fade-up"></div>
+        <span class="switcher-label">Vous téléchargez :</span>
+        <button class="switch-pill" data-cat="demo" onclick="selectCategory('demo')">🚀 Démo</button>
+        <button class="switch-pill" data-cat="pack" onclick="selectCategory('pack')">📦 Pack</button>
+        <button class="switch-pill" data-cat="portail" onclick="selectCategory('portail')">🖥️ Portail</button>
+    </div>
+</div>
 
-        <!-- PACKS NORMAUX -->
-        <div class="fade-up">
-            <div class="packs-grid" id="packsGridNormal"></div>
-        </div>
+<!-- CHOOSER : QUE VOULEZ-VOUS TÉLÉCHARGER ? -->
+<section class="files-section chooser-section" id="chooserSection">
+    <div class="container">
+        <h2 class="section-title fade-up">📥 Que voulez-vous télécharger ?</h2>
+        <p class="section-sub fade-up">Choisissez une catégorie pour voir les fichiers correspondants</p>
 
-        <!-- PACKS LSU -->
-        <p class="section-sub fade-up" style="margin-top:50px; margin-bottom:24px;">🇫🇷 Spécial LSU / Compétences — programme français</p>
-        <div class="fade-up">
-            <div class="packs-grid packs-grid-narrow" id="packsGridFR"></div>
+        <div class="choice-grid fade-up">
+            <div class="choice-card" data-cat="demo" tabindex="0" role="button" onclick="selectCategory('demo')" onkeydown="if(event.key==='Enter')selectCategory('demo')">
+                <div class="choice-icon">🚀</div>
+                <span class="choice-tag">Libre</span>
+                <h3>Une démo</h3>
+                <p>Version complète à tester 20 jours, sans engagement ni clé.</p>
+                <span class="choice-arrow">Voir les démos →</span>
+            </div>
+            <div class="choice-card" data-cat="pack" tabindex="0" role="button" onclick="selectCategory('pack')" onkeydown="if(event.key==='Enter')selectCategory('pack')">
+                <div class="choice-icon">📦</div>
+                <span class="choice-tag">Clé requise</span>
+                <h3>Un pack complet</h3>
+                <p>Le logiciel principal — élèves, notes, EDT, comptabilité et paie selon le pack.</p>
+                <span class="choice-arrow">Voir les packs →</span>
+            </div>
+            <div class="choice-card" data-cat="portail" tabindex="0" role="button" onclick="selectCategory('portail')" onkeydown="if(event.key==='Enter')selectCategory('portail')">
+                <div class="choice-icon">🖥️</div>
+                <span class="choice-tag">Complémentaire</span>
+                <h3>Un portail</h3>
+                <p>Application à part pour la direction, les enseignants, la cantine ou les parents.</p>
+                <span class="choice-arrow">Voir les portails →</span>
+            </div>
         </div>
+    </div>
+</section>
 
-        <!-- PACK GESTION -->
-        <p class="section-sub fade-up" style="margin-top:50px; margin-bottom:24px;">🗂️ Spécial Gestion — pilotage administratif sans notes ni EDT</p>
-        <div class="fade-up">
-            <div class="packs-grid packs-grid-narrow packs-grid-single" id="packsGridGestion"></div>
-        </div>
+<!-- PANEL DÉMO -->
+<section class="files-section category-panel" id="panelDemo" data-cat="demo">
+    <div class="container">
+        <button class="back-to-chooser" onclick="showChooser()">← Changer de catégorie</button>
+        <h2 class="section-title">🚀 Démo gratuite</h2>
+        <p class="section-sub">Version complète à tester 20 jours, sans engagement ni clé.</p>
+        <div id="demoContainer"></div>
+    </div>
+</section>
+
+<!-- PANEL PACKS -->
+<section class="files-section category-panel" id="panelPack" data-cat="pack">
+    <div class="container">
+        <button class="back-to-chooser" onclick="showChooser()">← Changer de catégorie</button>
+        <h2 class="section-title">📦 Packs complets</h2>
+        <p class="section-sub">Chaque pack a sa propre clé d'accès, reçue à l'achat</p>
+
+        <div class="packs-grid" id="packsGridNormal"></div>
+
+        <p class="section-sub" style="margin-top:50px; margin-bottom:24px;">🇫🇷 Spécial LSU / Compétences — programme français</p>
+        <div class="packs-grid packs-grid-narrow" id="packsGridFR"></div>
+
+        <p class="section-sub" style="margin-top:50px; margin-bottom:24px;">🗂️ Spécial Gestion — pilotage administratif sans notes ni EDT</p>
+        <div class="packs-grid packs-grid-narrow packs-grid-single" id="packsGridGestion"></div>
+    </div>
+</section>
+
+<!-- PANEL PORTAILS -->
+<section class="files-section category-panel" id="panelPortail" data-cat="portail">
+    <div class="container">
+        <button class="back-to-chooser" onclick="showChooser()">← Changer de catégorie</button>
+        <h2 class="section-title">🖥️ Portails</h2>
+        <p class="section-sub">Le Portail Parent se vend à part. Les 3 autres sont offerts avec la clé de votre pack.</p>
+
+        <p class="section-sub" style="margin-bottom:24px;">👨‍👩‍👧 Portail Parent — payant, clé dédiée</p>
+        <div class="packs-grid packs-grid-narrow" id="packsGridPortailParent"></div>
+
+        <p class="section-sub" style="margin-top:50px; margin-bottom:8px;">🎁 Offerts avec un pack — même clé, aucun achat séparé</p>
+        <div class="packs-grid packs-grid-narrow" id="packsGridPortailsGratuits"></div>
     </div>
 </section>
 
@@ -672,7 +858,7 @@
     <div class="modal-content">
         <span class="modal-icon">🔐</span>
         <h2>Clé requise</h2>
-        <p class="modal-sub">Entrez votre clé pour télécharger <br><strong id="modalFileName">fichier.zip</strong></p>
+        <p class="modal-sub" id="modalSub">Entrez votre clé pour télécharger <br><strong id="modalFileName">fichier.zip</strong></p>
         
         <input type="password" id="modalKeyInput" class="modal-input" placeholder="Clé d'accès" autocomplete="off">
         <div class="modal-status" id="modalStatus"></div>
@@ -840,10 +1026,79 @@
             description: '🔐 Pack Gestion – Pilotage direction : comptabilité et paie, sans notes ni EDT.',
             requires_key: true,
             download_url: ''
+        },
+        {
+            id: 8,
+            name: 'PortailParent.exe',
+            icon: '👨‍👩‍👧',
+            size: '14 Mo',
+            description: '🔐 Portail Parent – Suivi des notes, absences et paiements pour les familles.',
+            requires_key: true,
+            download_url: ''
+        },
+        {
+            id: 9,
+            name: 'PortailParentFR.exe',
+            icon: '🇫🇷',
+            size: '14 Mo',
+            description: '🔐 Portail Parent FR – Version LSU/compétences (programme français).',
+            requires_key: true,
+            download_url: ''
         }
     ];
 
+    // === PORTAILS GRATUITS ===
+    // Offerts à tout détenteur d'une clé de pack payant (1-7) : pas de clé
+    // à vendre séparément, la clé du pack sert de preuve d'achat. La bonne
+    // variante (Normal/FR) et le quota illimité sont gérés côté serveur
+    // dans "redeem-key" — ici on envoie juste le pack_id "portail".
+    const FREE_PORTAILS = [
+        {
+            id: 201,
+            name: 'Portail Direction',
+            icon: '🏫',
+            size: '13 Mo',
+            description: '🎁 Offert avec un pack – Supervision, statistiques et pilotage de l\'établissement.',
+        },
+        {
+            id: 202,
+            name: 'Portail Enseignants',
+            icon: '👩‍🏫',
+            size: '12 Mo',
+            description: '🎁 Offert avec un pack – Saisie des notes et absences pour le corps enseignant.',
+        },
+        {
+            id: 203,
+            name: 'Portail Cantine',
+            icon: '🍽️',
+            size: '12 Mo',
+            description: '🎁 Offert avec un pack – Gestion des présences et paiements de la cantine.',
+        }
+    ];
+
+    // Tous les fichiers qui passent par la modale "clé" (packs payants + portails gratuits).
+    const KEYED_FILES = PACKS.concat(FREE_PORTAILS);
+
     let pendingFile = null;
+
+    // ============================================
+    // SÉLECTEUR DE CATÉGORIE (Démo / Pack / Portail)
+    // ============================================
+    function selectCategory(cat) {
+        document.getElementById('chooserSection').classList.add('collapsed');
+        document.querySelectorAll('.category-panel').forEach(p => p.classList.toggle('visible', p.dataset.cat === cat));
+        document.getElementById('categorySwitcher').classList.add('visible');
+        document.querySelectorAll('.switch-pill').forEach(p => p.classList.toggle('active', p.dataset.cat === cat));
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function showChooser() {
+        document.getElementById('chooserSection').classList.remove('collapsed');
+        document.querySelectorAll('.category-panel').forEach(p => p.classList.remove('visible'));
+        document.getElementById('categorySwitcher').classList.remove('visible');
+        document.querySelectorAll('.switch-pill').forEach(p => p.classList.remove('active'));
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
 
     // ============================================
     // CHARGEMENT DES FICHIERS
@@ -866,9 +1121,13 @@
         const gridNormal = document.getElementById('packsGridNormal');
         const gridFR = document.getElementById('packsGridFR');
         const gridGestion = document.getElementById('packsGridGestion');
+        const gridPortailParent = document.getElementById('packsGridPortailParent');
+        const gridPortailsGratuits = document.getElementById('packsGridPortailsGratuits');
         gridNormal.innerHTML = '';
         gridFR.innerHTML = '';
         gridGestion.innerHTML = '';
+        gridPortailParent.innerHTML = '';
+        gridPortailsGratuits.innerHTML = '';
 
         PACKS.forEach((pack, index) => {
             const card = document.createElement('div');
@@ -883,8 +1142,28 @@
                     <i class="fas fa-lock"></i> Télécharger
                 </button>
             `;
-            const grid = pack.id === 7 ? gridGestion : (pack.id === 5 || pack.id === 6) ? gridFR : gridNormal;
+            const grid = (pack.id === 8 || pack.id === 9) ? gridPortailParent
+                : pack.id === 7 ? gridGestion
+                : (pack.id === 5 || pack.id === 6) ? gridFR
+                : gridNormal;
             grid.appendChild(card);
+            setTimeout(() => card.classList.add('visible'), 200 + index * 100);
+        });
+
+        FREE_PORTAILS.forEach((portail, index) => {
+            const card = document.createElement('div');
+            card.className = 'file-card fade-up';
+            card.innerHTML = `
+                <span class="icon">${portail.icon}</span>
+                <span class="badge badge-free-portail">🎁 Gratuit avec un pack</span>
+                <h3>${portail.name}</h3>
+                <div class="size"><i class="fas fa-hdd"></i> ${portail.size}</div>
+                <div class="desc">${portail.description}</div>
+                <button onclick="requestDownload(${portail.id})" class="btn-primary btn-download">
+                    <i class="fas fa-key"></i> Télécharger avec ma clé
+                </button>
+            `;
+            gridPortailsGratuits.appendChild(card);
             setTimeout(() => card.classList.add('visible'), 200 + index * 100);
         });
     }
@@ -925,11 +1204,14 @@
     // DEMANDE DE TÉLÉCHARGEMENT (AVEC CLÉ)
     // ============================================
     function requestDownload(fileId) {
-        const file = PACKS.find(f => f.id === fileId);
+        const file = KEYED_FILES.find(f => f.id === fileId);
         if (!file) return;
 
+        const isFreePortail = FREE_PORTAILS.includes(file);
         pendingFile = file;
-        document.getElementById('modalFileName').textContent = file.name;
+        document.getElementById('modalSub').innerHTML = isFreePortail
+            ? `Entrez la clé de <strong>votre pack</strong> pour télécharger, offert : <br><strong id="modalFileName">${file.name}</strong>`
+            : `Entrez votre clé pour télécharger <br><strong id="modalFileName">${file.name}</strong>`;
         document.getElementById('modalKeyInput').value = '';
         document.getElementById('modalStatus').className = 'modal-status';
         document.getElementById('modalStatus').style.display = 'none';
@@ -981,7 +1263,10 @@
                 return;
             }
 
-            showModalStatus(`✅ Téléchargement autorisé ! (${result.remaining} restant${result.remaining > 1 ? 's' : ''})`, 'success');
+            const successMsg = result.unlimited
+                ? '✅ Téléchargement autorisé ! (offert avec votre pack, sans limite)'
+                : `✅ Téléchargement autorisé ! (${result.remaining} restant${result.remaining > 1 ? 's' : ''})`;
+            showModalStatus(successMsg, 'success');
 
             setTimeout(() => {
                 window.location.href = result.url; // URL signée temporaire, jamais l'URL permanente
