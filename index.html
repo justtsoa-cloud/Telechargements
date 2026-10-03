@@ -314,6 +314,7 @@
         .switch-pill.active[data-cat="demo"] { background: #27AE60; border-color: #27AE60; color: white; }
         .switch-pill.active[data-cat="pack"] { background: #1A3C6E; border-color: #1A3C6E; color: white; }
         .switch-pill.active[data-cat="portail"] { background: #B7791F; border-color: #B7791F; color: white; }
+        .switch-pill.active[data-cat="pedago"] { background: #6B46C1; border-color: #6B46C1; color: white; }
 
         /* === CHOOSER (sélecteur de catégorie initial) === */
         .chooser-section.collapsed { display: none; }
@@ -349,6 +350,7 @@
         .choice-card[data-cat="demo"]:hover { border-color: #27AE60; }
         .choice-card[data-cat="pack"]:hover { border-color: #1A3C6E; }
         .choice-card[data-cat="portail"]:hover { border-color: #B7791F; }
+        .choice-card[data-cat="pedago"]:hover { border-color: #6B46C1; }
         .choice-icon {
             width: 64px; height: 64px;
             border-radius: 18px;
@@ -358,6 +360,7 @@
         .choice-card[data-cat="demo"] .choice-icon { background: rgba(39,174,96,0.12); }
         .choice-card[data-cat="pack"] .choice-icon { background: rgba(26,60,110,0.1); }
         .choice-card[data-cat="portail"] .choice-icon { background: rgba(183,121,31,0.14); }
+        .choice-card[data-cat="pedago"] .choice-icon { background: rgba(107,70,193,0.12); }
         .choice-tag {
             font-size: 0.72rem;
             font-weight: 700;
@@ -369,6 +372,7 @@
         .choice-card[data-cat="demo"] .choice-tag { background: rgba(39,174,96,0.15); color: #1e8a4a; }
         .choice-card[data-cat="pack"] .choice-tag { background: rgba(26,60,110,0.1); color: #1A3C6E; }
         .choice-card[data-cat="portail"] .choice-tag { background: rgba(183,121,31,0.18); color: #8a5a15; }
+        .choice-card[data-cat="pedago"] .choice-tag { background: rgba(107,70,193,0.15); color: #6B46C1; }
         .choice-card h3 { font-size: 1.3rem; font-weight: 700; color: #1A3C6E; }
         .choice-card p { color: #475569; font-size: 0.95rem; line-height: 1.55; }
         .choice-arrow { font-size: 0.88rem; font-weight: 600; color: #94a3b8; transition: 0.2s; }
@@ -756,6 +760,7 @@
         <button class="switch-pill" data-cat="demo" onclick="selectCategory('demo')">🚀 Démo</button>
         <button class="switch-pill" data-cat="pack" onclick="selectCategory('pack')">📦 Pack</button>
         <button class="switch-pill" data-cat="portail" onclick="selectCategory('portail')">🖥️ Portail</button>
+        <button class="switch-pill" data-cat="pedago" onclick="selectCategory('pedago')">📒 PédaGO</button>
     </div>
 </div>
 
@@ -786,6 +791,13 @@
                 <h3>Un portail</h3>
                 <p>Application à part pour la direction, les enseignants, la cantine ou les parents.</p>
                 <span class="choice-arrow">Voir les portails →</span>
+            </div>
+            <div class="choice-card" data-cat="pedago" tabindex="0" role="button" onclick="selectCategory('pedago')" onkeydown="if(event.key==='Enter')selectCategory('pedago')">
+                <div class="choice-icon">📒</div>
+                <span class="choice-tag">Clé requise</span>
+                <h3>PédaGO</h3>
+                <p>Cahier de texte et suivi pédagogique — BASIQUE ou Pro.</p>
+                <span class="choice-arrow">Voir PédaGO →</span>
             </div>
         </div>
     </div>
@@ -830,6 +842,17 @@
 
         <p class="section-sub" style="margin-top:50px; margin-bottom:8px;">🎁 Offerts avec un pack — même clé, aucun achat séparé</p>
         <div class="packs-grid packs-grid-narrow" id="packsGridPortailsGratuits"></div>
+    </div>
+</section>
+
+<!-- PANEL PÉDAGO -->
+<section class="files-section category-panel" id="panelPedago" data-cat="pedago">
+    <div class="container">
+        <button class="back-to-chooser" onclick="showChooser()">← Changer de catégorie</button>
+        <h2 class="section-title">📒 PédaGO</h2>
+        <p class="section-sub">Cahier de texte et suivi pédagogique, chaque pack a sa propre clé d'accès</p>
+
+        <div class="packs-grid packs-grid-narrow" id="packsGridPedago"></div>
     </div>
 </section>
 
@@ -1095,8 +1118,30 @@
         }
     ];
 
-    // Tous les fichiers qui passent par la modale "clé" (packs payants + portails gratuits).
-    const KEYED_FILES = PACKS.concat(FREE_PORTAILS);
+    // === PÉDAGO (famille de logiciels séparée de Suite École) ===
+    const PEDAGO_PACKS = [
+        {
+            id: 11,
+            name: 'SuitePedaGOBasique.exe',
+            icon: '📒',
+            size: '25 Mo',
+            description: '🔐 PédaGO BASIQUE – Cahier de texte et suivi pédagogique.',
+            requires_key: true,
+            download_url: ''
+        },
+        {
+            id: 12,
+            name: 'PedagoPro.exe',
+            icon: '🎓',
+            size: '30 Mo',
+            description: '🔐 PédaGO Pro – Suite École Basique Plus + cahier de texte PédaGO.',
+            requires_key: true,
+            download_url: ''
+        }
+    ];
+
+    // Tous les fichiers qui passent par la modale "clé" (packs payants + portails gratuits + PédaGO).
+    const KEYED_FILES = PACKS.concat(FREE_PORTAILS).concat(PEDAGO_PACKS);
 
     let pendingFile = null;
 
@@ -1142,11 +1187,13 @@
         const gridGestion = document.getElementById('packsGridGestion');
         const gridPortailParent = document.getElementById('packsGridPortailParent');
         const gridPortailsGratuits = document.getElementById('packsGridPortailsGratuits');
+        const gridPedago = document.getElementById('packsGridPedago');
         gridNormal.innerHTML = '';
         gridFR.innerHTML = '';
         gridGestion.innerHTML = '';
         gridPortailParent.innerHTML = '';
         gridPortailsGratuits.innerHTML = '';
+        gridPedago.innerHTML = '';
 
         PACKS.forEach((pack, index) => {
             const card = document.createElement('div');
@@ -1183,6 +1230,23 @@
                 </button>
             `;
             gridPortailsGratuits.appendChild(card);
+            setTimeout(() => card.classList.add('visible'), 200 + index * 100);
+        });
+
+        PEDAGO_PACKS.forEach((pack, index) => {
+            const card = document.createElement('div');
+            card.className = 'file-card fade-up';
+            card.innerHTML = `
+                <span class="icon">${pack.icon}</span>
+                <span class="badge badge-locked">🔐 Clé requise</span>
+                <h3>${pack.name}</h3>
+                <div class="size"><i class="fas fa-hdd"></i> ${pack.size}</div>
+                <div class="desc">${pack.description}</div>
+                <button onclick="requestDownload(${pack.id})" class="btn-primary btn-download">
+                    <i class="fas fa-lock"></i> Télécharger
+                </button>
+            `;
+            gridPedago.appendChild(card);
             setTimeout(() => card.classList.add('visible'), 200 + index * 100);
         });
     }
