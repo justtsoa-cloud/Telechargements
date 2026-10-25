@@ -1140,8 +1140,21 @@
         }
     ];
 
+    // Portail Enseignant PédaGO : offert à tout détenteur d'une clé PédaGO
+    // (Basique ou Pro), même principe que FREE_PORTAILS — une seule carte,
+    // le serveur choisit la bonne variante (Basique/Pro) selon la clé fournie.
+    const PEDAGO_FREE_PORTAILS = [
+        {
+            id: 206,
+            name: 'Portail Enseignant PédaGO.exe',
+            icon: '👩‍🏫',
+            size: '12 Mo',
+            description: '🎁 Offert avec une clé PédaGO – Saisie des notes et absences, cahier de texte en ligne.',
+        }
+    ];
+
     // Tous les fichiers qui passent par la modale "clé" (packs payants + portails gratuits + PédaGO).
-    const KEYED_FILES = PACKS.concat(FREE_PORTAILS).concat(PEDAGO_PACKS);
+    const KEYED_FILES = PACKS.concat(FREE_PORTAILS).concat(PEDAGO_PACKS).concat(PEDAGO_FREE_PORTAILS);
 
     let pendingFile = null;
 
@@ -1249,6 +1262,23 @@
             gridPedago.appendChild(card);
             setTimeout(() => card.classList.add('visible'), 200 + index * 100);
         });
+
+        PEDAGO_FREE_PORTAILS.forEach((portail, index) => {
+            const card = document.createElement('div');
+            card.className = 'file-card fade-up';
+            card.innerHTML = `
+                <span class="icon">${portail.icon}</span>
+                <span class="badge badge-free-portail">🎁 Gratuit avec une clé PédaGO</span>
+                <h3>${portail.name}</h3>
+                <div class="size"><i class="fas fa-hdd"></i> ${portail.size}</div>
+                <div class="desc">${portail.description}</div>
+                <button onclick="requestDownload(${portail.id})" class="btn-primary btn-download">
+                    <i class="fas fa-key"></i> Télécharger avec ma clé
+                </button>
+            `;
+            gridPedago.appendChild(card);
+            setTimeout(() => card.classList.add('visible'), 200 + (PEDAGO_PACKS.length + index) * 100);
+        });
     }
 
     // ============================================
@@ -1290,7 +1320,7 @@
         const file = KEYED_FILES.find(f => f.id === fileId);
         if (!file) return;
 
-        const isFreePortail = FREE_PORTAILS.includes(file);
+        const isFreePortail = FREE_PORTAILS.includes(file) || PEDAGO_FREE_PORTAILS.includes(file);
         pendingFile = file;
         document.getElementById('modalSub').innerHTML = isFreePortail
             ? `Entrez la clé de <strong>votre pack</strong> pour télécharger, offert : <br><strong id="modalFileName">${file.name}</strong>`
