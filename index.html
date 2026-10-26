@@ -1153,8 +1153,21 @@
         }
     ];
 
+    // BulletinApp (Android) : offert à tout détenteur d'une clé d'un pack avec
+    // saisie de notes (Normal/FR 1-6 ou PédaGO 11/12) — un seul fichier pour
+    // tous, le serveur vérifie l'éligibilité selon le pack_id de la clé.
+    const BULLETIN_APP = [
+        {
+            id: 207,
+            name: 'BulletinApp.apk',
+            icon: '📱',
+            size: '7 Mo',
+            description: '🎁 Offert avec votre clé – Saisie des notes hors ligne sur Android, synchronisation avec le serveur de l\'établissement.',
+        }
+    ];
+
     // Tous les fichiers qui passent par la modale "clé" (packs payants + portails gratuits + PédaGO).
-    const KEYED_FILES = PACKS.concat(FREE_PORTAILS).concat(PEDAGO_PACKS).concat(PEDAGO_FREE_PORTAILS);
+    const KEYED_FILES = PACKS.concat(FREE_PORTAILS).concat(PEDAGO_PACKS).concat(PEDAGO_FREE_PORTAILS).concat(BULLETIN_APP);
 
     let pendingFile = null;
 
@@ -1246,6 +1259,23 @@
             setTimeout(() => card.classList.add('visible'), 200 + index * 100);
         });
 
+        BULLETIN_APP.forEach((app, index) => {
+            const card = document.createElement('div');
+            card.className = 'file-card fade-up';
+            card.innerHTML = `
+                <span class="icon">${app.icon}</span>
+                <span class="badge badge-free-portail">🎁 Gratuit avec un pack</span>
+                <h3>${app.name}</h3>
+                <div class="size"><i class="fas fa-hdd"></i> ${app.size}</div>
+                <div class="desc">${app.description}</div>
+                <button onclick="requestDownload(${app.id})" class="btn-primary btn-download">
+                    <i class="fas fa-key"></i> Télécharger avec ma clé
+                </button>
+            `;
+            gridPortailsGratuits.appendChild(card);
+            setTimeout(() => card.classList.add('visible'), 200 + (FREE_PORTAILS.length + index) * 100);
+        });
+
         PEDAGO_PACKS.forEach((pack, index) => {
             const card = document.createElement('div');
             card.className = 'file-card fade-up';
@@ -1278,6 +1308,23 @@
             `;
             gridPedago.appendChild(card);
             setTimeout(() => card.classList.add('visible'), 200 + (PEDAGO_PACKS.length + index) * 100);
+        });
+
+        BULLETIN_APP.forEach((app, index) => {
+            const card = document.createElement('div');
+            card.className = 'file-card fade-up';
+            card.innerHTML = `
+                <span class="icon">${app.icon}</span>
+                <span class="badge badge-free-portail">🎁 Gratuit avec votre clé</span>
+                <h3>${app.name}</h3>
+                <div class="size"><i class="fas fa-hdd"></i> ${app.size}</div>
+                <div class="desc">${app.description}</div>
+                <button onclick="requestDownload(${app.id})" class="btn-primary btn-download">
+                    <i class="fas fa-key"></i> Télécharger avec ma clé
+                </button>
+            `;
+            gridPedago.appendChild(card);
+            setTimeout(() => card.classList.add('visible'), 200 + (PEDAGO_PACKS.length + PEDAGO_FREE_PORTAILS.length + index) * 100);
         });
     }
 
@@ -1320,7 +1367,7 @@
         const file = KEYED_FILES.find(f => f.id === fileId);
         if (!file) return;
 
-        const isFreePortail = FREE_PORTAILS.includes(file) || PEDAGO_FREE_PORTAILS.includes(file);
+        const isFreePortail = FREE_PORTAILS.includes(file) || PEDAGO_FREE_PORTAILS.includes(file) || BULLETIN_APP.includes(file);
         pendingFile = file;
         document.getElementById('modalSub').innerHTML = isFreePortail
             ? `Entrez la clé de <strong>votre pack</strong> pour télécharger, offert : <br><strong id="modalFileName">${file.name}</strong>`
